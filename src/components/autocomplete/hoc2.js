@@ -6,6 +6,7 @@ export default function hoc2(Component){
             super(props);
             this.state={
                 value:"",
+                v:[],
             }
         }
        
@@ -24,7 +25,8 @@ export default function hoc2(Component){
                 <Component {...this.props}
                 onChange={this.onChange}
                 onChang={this.handleChange}
-                value={this.state.value}/>
+                value={this.state.value}
+                v={this.state.v}/>
             )
         }
     }

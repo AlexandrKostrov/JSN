@@ -15,6 +15,7 @@ export default class Chart extends React.Component{
             p6:50,
             p7:60,
             curcurr:[],
+            price:null,
         }
     }
 
@@ -39,8 +40,7 @@ export default class Chart extends React.Component{
                     console.log(curcurr[0]);
                 ws.send(JSON.stringify({  type: 'unsubscribe', currency: curcurr[0]  }));
             })
-            }
-            
+            } 
         }
         shouldComponentUpdate({value}){
             if(db.includes(value)){
@@ -49,14 +49,15 @@ export default class Chart extends React.Component{
         }
         componentWillUpdate({value}){
             const ws=new WebSocket('ws://coins-stream.demo.javascript.ninja');
+            const t=this;
             ws.addEventListener('open',function(){ 
                 console.log('OK Connected');
                 const curr=value;
-                ws.send(JSON.stringify({  type: 'subscribe', currency: curr  }));
+                ws.send(JSON.stringify({type: 'subscribe', currency: curr  }));
                 ws.addEventListener('message',function(event){
                     
                     const res=JSON.parse(event.data);
-                    console.log(res);
+                    
                 });
                ws.addEventListener('close',function(event){
                    console.log('Good Bye')

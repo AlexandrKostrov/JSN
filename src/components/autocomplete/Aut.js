@@ -8,7 +8,9 @@ import Chart from '../chart/Chart';
  class Aut extends React.Component{
      constructor(props){
          super(props);
-       
+       this.state={open:false,
+       itemContainerBox: {},
+      v:[]}
      }
      handleRef=(node)=>{
          this.div=node;
@@ -32,18 +34,62 @@ import Chart from '../chart/Chart';
             }
         })
      }
-     componentWillReceiveProps(nextProps){
+     getItemsContainerBox = () => {
+        if (!this.inp|| !this.itemsContainerElement) {
+          return;
+        }
+        const rootElementBoundery = this.inp.getBoundingClientRect();
+        const itemsContainerElementBoundery = this.itemsContainerElement.getBoundingClientRect();
+        const left = rootElementBoundery.left;
+        const bottom =
+          rootElementBoundery.top + this.itemsContainerElement.offsetHeight;
+        const top =
+          bottom > window.innerHeight
+            ? rootElementBoundery.bottom - this.itemsContainerElement.offsetHeight
+            : rootElementBoundery.top;
+        return {
+          width: `${this.inp.offsetWidth}px`,
+          left: `${left}px`,
+          top: `${top}px`,
+        };
+      };
+    
+      setItemsConteinerBox = () => {
+        const itemContainerBox = this.getItemsContainerBox();
+        this.setState({
+          itemContainerBox,
+        });
+      };
+     renderItems=(val)=>{
+        const {v}=this.state;
+        //this.props.getItems(val).then(function(items){items.forEach(item=>v.push(item))});
+         
+      //  console.log(v);
+       
+        return (
+             <div className="good"
+              style={this.state.itemContainerBox} ref={itemsContainer => {
+            this.itemsContainerElement = itemsContainer;
+          }}> 
+            { v.map(item=>
+              { return  (<p className="notBad" onClick={this.props.onChang} 
+              children={item}/> )}
+            )  }
+             </div>
+         )
+         this.setState({open:false})
+     }
+     getActiveCur=(val)=>{
+       return this.props.getItems(val).then(data=>{
+      this.setState({v:data});
+       })
+     }
+    async componentWillReceiveProps(nextProps){
         if(nextProps.value!==this.props.value && nextProps.value!=="" && 
          nextProps.value.length!=3){
-             this.hide();
-             this.props.getItems(nextProps.value).then(items=>items.forEach(item=>{
-                const str=document.createElement("p");
-                
-                str.innerHTML=item;
-                str.addEventListener('click',this.props.onChang);
-                this.div.style={display:'block'};
-                this.div.appendChild(str);
-            }))
+             this.setItemsConteinerBox();
+            this.setState({open:true});
+       await this.getActiveCur(nextProps.value);
              }
           this.backDropClick(); 
          }
@@ -51,7 +97,7 @@ import Chart from '../chart/Chart';
        
     
       render(){
-         // console.log(this.props.value);
+         const {open}=this.state;
     return(
         <div>
         <input 
@@ -60,13 +106,14 @@ import Chart from '../chart/Chart';
        // onKeyPress={this.help}
         onChange={this.props.onChange}
         id="autocomplete" type="text"  />
-        <div id="autocomplete_result" 
+        {this.state.open&&this.renderItems()}
+        {<div id="autocomplete_result" 
         ref={this.handleRef}
         styles="display: none;"
-        onClick={this.hide}></div>
+        onClick={this.hide}></div>}
         <Chart value={this.props.value}/>
         </div>
-       
+      
     );}
 }
 export default hoc2(hoc(Aut));

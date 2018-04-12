@@ -11,12 +11,8 @@ export default function hoc(Component){
           return new Promise(function(ok,fail){
            var a =new RegExp(text, "i");
            ok(db.filter(curr=>{return a.test(curr);})) 
-          
-           
-        });    
-           
-        
-        }
+           });    
+            }
         render(){
             return(
                 <Component {...this.props} getItems={this.getItems}/>
